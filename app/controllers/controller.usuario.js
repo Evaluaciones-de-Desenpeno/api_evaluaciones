@@ -8,15 +8,15 @@ config();
 
 
 
-const mostarUsuarios = async (req, res) => {
-    try{
-        const [respuesta] = await pool.query(`CALL SP_MOSTRAR_USUARIOS();`);
-        success(req, res, 200, respuesta[0]);
+// const mostarUsuarios = async (req, res) => {
+//     try{
+//         const [respuesta] = await pool.query(`CALL SP_MOSTRAR_USUARIOS();`);
+//         success(req, res, 200, respuesta[0]);
         
-    } catch (err){
-        error(req, res, 500, err);
-    }
-};
+//     } catch (err){
+//         error(req, res, 500, err);
+//     }
+// };
 
 
 
@@ -72,7 +72,7 @@ const loginusuario = async (req, res) => {
                 usuario_id: usuario.usuario_id,
                 rol_id: usuario.rol_id,
                 nombre: usuario.nombre,
-                correo: usuario.rol,
+                correo: usuario.correo,
             },
             process.env.TOKEN_PRIVATEKEY, // Clave secreta
             { expiresIn: process.env.TOKEN_EXPIRES_IN } // Expiración del token
