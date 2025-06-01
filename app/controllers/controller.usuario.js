@@ -18,6 +18,15 @@ config();
 //     }
 // };
 
+const obtenerRoles = async (req, res) => {
+    try {
+        const [respuesta] = await pool.query(`CALL SP_MOSTRAR_ROL();`);
+        success(req, res, 200, respuesta[0]);
+    } catch (err) {
+        error(req, res, 500, err);
+    }
+};
+
 
 
 const crearUsuario = async (req, res) => {
@@ -80,15 +89,16 @@ const loginusuario = async (req, res) => {
 
         // Devolver una respuesta exitosa con el token y la información del usuario
         res.status(200).json({
-            message: "Bienvenido",
-            token: token,
-            usuario: {
-                usuario_id: usuario.usuario_id,
-                rol_id: usuario.rol_id,
-                nombre: usuario.nombre,
-                correo: usuario.rol, // Incluir la bodega en la respuesta
-            },
-        });
+    message: "Bienvenido",
+    token: token,
+    usuario: {
+        usuario_id: usuario.usuario_id,
+        rol_id: usuario.rol_id,
+        nombre: usuario.nombre,
+        correo: usuario.correo,
+        rol_nombre: usuario.rol_nombre // NUEVO
+    },
+});
     } catch (e) {
         console.error("Error en loginusuario:", e);
         error(req, res, 500, "Error en el servidor, por favor intente de nuevo.");
@@ -97,4 +107,4 @@ const loginusuario = async (req, res) => {
 
 
 
-export {crearUsuario, loginusuario};
+export {crearUsuario, loginusuario, obtenerRoles};

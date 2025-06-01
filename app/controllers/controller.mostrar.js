@@ -30,9 +30,12 @@ const mostrarevaluaciones = async (req,res) => {
 
 const mostrarobjetivo = async (req,res) => {
     const { rol_id } = req.query;
+    console.log("🔍 Llamando a SP_MOSTRAR_OBJETIVO con rol_id:", rol_id); // LOG
+
     if (!rol_id) {
         return error(req, res, 400, "El rol_id es obligatorio");
     }
+
     try {
         const [respuesta] = await pool.query(`CALL SP_MOSTRAR_OBJETIVO(${rol_id});`);
         success(req, res, 200, respuesta[0]);
@@ -40,6 +43,7 @@ const mostrarobjetivo = async (req,res) => {
         error(req, res, 500, err);
     }
 };
+
 
 const mostrarobjetivopregunta = async (req,res) => {
     const { objetivo_id } = req.query;
@@ -74,7 +78,7 @@ const mostrarcompetenciapregunta = async (req,res) => {
         return error(req, res, 400, "El competencia_id es obligatorio");
     }
     try {
-        const [respuesta] = await pool.query(`CALL SP_MOSTRAR_COMPETENCIA_PREGUNTAS(${competencia_id});`);
+        const [respuesta] = await pool.query(`CALL SP_MOSTRAR_COMPETENCIA_PREGUNTA(${competencia_id});`);
         success(req, res, 200, respuesta[0]);
     } catch (err) {
         error(req, res, 500, err);

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { crearUsuario, loginusuario } from '../controllers/controller.usuario.js';
+import { crearUsuario, loginusuario, obtenerRoles } from '../controllers/controller.usuario.js';
 
 
 const rutausuario = Router();
@@ -8,6 +8,7 @@ const rutausuario = Router();
 
 rutausuario.post("/usuario", crearUsuario);
 rutausuario.post("/login",loginusuario);
+rutausuario.get("/roles", obtenerRoles);
 
 
 
