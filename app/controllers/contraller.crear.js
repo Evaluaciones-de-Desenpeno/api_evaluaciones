@@ -1,6 +1,22 @@
 import pool from "../config/mysql.db.js";
 import { success, error } from "../messages/browser.js";
 
+// Función para mapear texto a valor_respuesta_id
+function obtenerValorRespuestaId(texto) {
+    const textoLower = texto?.toLowerCase().trim();
+    switch (textoLower) {
+        case 'siempre':
+            return 1;
+        case 'a veces':
+        case 'aveces':
+            return 2;
+        case 'nunca':
+            return 3;
+        default:
+            return null; // Valor no válido
+    }
+}
+
 const guardarEvaluacionCompleta = async (req, res) => {
     const {
         nombreEvaluado,
@@ -11,7 +27,7 @@ const guardarEvaluacionCompleta = async (req, res) => {
         respuestas,
     } = req.body;
 
-    const usuario_id = req.user?.usuario_id || 1; // Puedes ajustar según token
+    const usuario_id = req.user?.usuario_id || 1;
 
     if (!fechaEvaluacion || !nombreEvaluado || !cargoEvaluado || !nombreEvaluador || !cargoEvaluador || !respuestas) {
         return error(req, res, 400, "Faltan datos de la evaluación.");
@@ -27,18 +43,26 @@ const guardarEvaluacionCompleta = async (req, res) => {
             [fechaEvaluacion, nombreEvaluado, cargoEvaluado, nombreEvaluador, cargoEvaluador]
         );
 
-        // Obtener el ID insertado desde evaluaciones_realizadas
+        // 2. Obtener el ID insertado
         const [[lastInsert]] = await conn.query(`SELECT LAST_INSERT_ID() AS evaluacion_realizada_id`);
         const evaluacion_realizada_id = lastInsert.evaluacion_realizada_id;
 
-        // 2. Insertar respuestas (unificando todas)
-        const todas = [...respuestas.objetivo, ...respuestas.corporativas, ...respuestas.blandas];
+        // 3. Unificar y recorrer todas las respuestas
+        const todas = [
+            ...respuestas.objetivo,
+            ...respuestas.corporativas,
+            ...respuestas.blandas,
+        ];
 
         for (const r of todas) {
-            // Por ahora, asumimos valor_respuesta_id = null
+            const valor_id = r.valor_respuesta_id || obtenerValorRespuestaId(r.respuesta);
+            if (!valor_id) {
+                throw new Error(`Respuesta inválida o no mapeada: "${r.respuesta}"`);
+            }
+
             await conn.query(
-                `CALL SP_CREAR_RESPUESTA(?, ?, ?, ?, ?)`,
-                [usuario_id, r.pregunta_id, evaluacion_realizada_id, r.valor_respuesta_id || 0, r.respuesta]
+                `CALL SP_CREAR_RESPUESTA(?, ?, ?, ?)`,
+                [usuario_id, r.pregunta_id, evaluacion_realizada_id, valor_id]
             );
         }
 
