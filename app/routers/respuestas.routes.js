@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { guardarEvaluacionCompleta } from "../controllers/contraller.crear.js";
+import { exportarRespuestasExcel, guardarEvaluacionCompleta } from "../controllers/contraller.crear.js";
 
 
 const rutaCrear = Router();
 
 rutaCrear.post("/guardar", guardarEvaluacionCompleta);
+rutaCrear.get("/exportar", exportarRespuestasExcel);
 
 export default rutaCrear;
